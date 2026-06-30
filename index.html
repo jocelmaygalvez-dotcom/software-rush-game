@@ -61,6 +61,7 @@
         button:hover { opacity: 0.9; }
         .warning { color: var(--error); font-weight: bold; margin-top: 10px; height: 20px; }
         .hidden { display: none; }
+        #db-status { font-size: 0.9rem; color: #94a3b8; margin-top: 15px; word-break: break-all; }
     </style>
 </head>
 <body>
@@ -93,8 +94,10 @@
 
 <script>
     // --- SUPABASE CONFIGURATION ---
+    // PUT YOUR ACTUAL KEYS IN THE STRINGS BELOW
     const SUPABASE_URL = 'https://xtcpzeihrblaueoxspum.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0Y3B6ZWlocmJsYXVlb3hzcHVtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjI3MDgsImV4cCI6MjA5ODM5ODcwOH0.8pZU9RQWoLnXozsn-wVFeL3aZAXNt5dmj-Sjujbf8_U';
+    
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // --- GAME DATA ---
@@ -110,7 +113,7 @@
     // --- STATE VARIABLES ---
     let currentQuestionIndex = 0;
     let score = 0;
-    let timeLeft = 300; // 5 minutes in seconds
+    let timeLeft = 300; // 5 minutes
     let timerInterval;
     let username = "";
 
@@ -159,7 +162,6 @@
             currentQuestionIndex++;
             loadQuestion();
         } else {
-            // Strict control: Gives a warning and halts progress until corrected
             warningMsg.textContent = "❌ Incorrect! Check your concepts and try again.";
         }
     }
@@ -187,17 +189,26 @@
         endScreen.classList.remove('hidden');
         finalScoreDisplay.textContent = score;
 
-        // Push data to Supabase
+        dbStatus.style.color = "#94a3b8";
+        dbStatus.textContent = "Saving your score to database...";
+
+        // Push data to Supabase table: sw_rush_scores
         try {
             const { data, error } = await _supabase
                 .from('sw_rush_scores')
                 .insert([{ student_name: username, final_score: score }]);
             
-            if (error) throw error;
-            dbStatus.textContent = "✅ Score successfully tracked in Supabase!";
-        } catch (error) {
-            console.error(error);
-            dbStatus.textContent = "❌ Error saving score to database.";
+            if (error) {
+                throw error;
+            } else {
+                dbStatus.style.color = "#4ade80";
+                dbStatus.textContent = "✅ Score successfully tracked in Supabase!";
+            }
+        } catch (err) {
+            console.error("Database Save Error Details: ", err);
+            dbStatus.style.color = "#ef4444";
+            // Displays exact internal message from your database instance context
+            dbStatus.textContent = `❌ DB Error: ${err.message || JSON.stringify(err)}`;
         }
     }
 </script>
