@@ -3,102 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Software Rush Game</title>
+    <title>Software Rush - Badas NHS</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent: #38bdf8;
-            --text: #f8fafc;
-            --error: #ef4444;
+            --bg-color: #000000;      /* Sleek Black */
+            --card-bg: #111111;       /* Dark charcoal */
+            --accent-green: #22c55e;  /* Vibrant Badas Green */
+            --accent-hover: #15803d;  /* Darker Green */
+            --text-light: #ffffff;    /* Pure White */
+            --text-muted: #a3a3a3;    /* Grey text */
+            --error-red: #ef4444;     /* Warning Red */
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text);
+            color: var(--text-light);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
         }
         .container {
             background-color: var(--card-bg);
+            border: 2px solid var(--accent-green);
             padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border-radius: 16px;
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.2);
             width: 100%;
-            max-width: 450px;
+            max-width: 480px;
             text-align: center;
+            box-sizing: border-box;
         }
-        h1 { color: var(--accent); margin-top: 0; }
-        .timer { font-size: 1.5rem; font-weight: bold; margin: 10px 0; color: #fbbf24; }
-        .hint-box { background: #334155; padding: 15px; border-radius: 8px; margin: 15px 0; font-style: italic; }
+        /* School Logo Box Section */
+        .school-header {
+            margin-bottom: 1.5rem;
+        }
+        .school-logo {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            border-radius: 50%;
+            border: 2px solid var(--accent-green);
+            background: #ffffff;
+            padding: 4px;
+        }
+        .school-title {
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+        h1 { 
+            color: var(--accent-green); 
+            margin: 0.5rem 0 1.5rem 0; 
+            font-size: 2rem;
+        }
+        /* Icons & Stats Styling */
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            font-size: 1.1rem;
+        }
+        .stat-item {
+            background: #1e1e1e;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .timer-highlight { color: #eab308; border-color: #eab308; }
+        .score-highlight { color: var(--accent-green); }
+        
+        .hint-box { 
+            background: #1e1e1e; 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin: 20px 0; 
+            font-style: italic; 
+            border-left: 4px solid var(--accent-green);
+            text-align: left;
+            line-height: 1.5;
+        }
         input[type="text"] {
-            width: 80%;
-            padding: 12px;
-            border: 2px solid #475569;
-            background: #0f172a;
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #333333;
+            background: #000000;
             color: white;
-            border-radius: 6px;
-            font-size: 1rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
             text-align: center;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
         }
-        input[type="text"]:focus { outline: none; border-color: var(--accent); }
+        input[type="text"]:focus { 
+            outline: none; 
+            border-color: var(--accent-green); 
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+        }
         button {
-            background-color: var(--accent);
-            color: #0f172a;
+            background-color: var(--accent-green);
+            color: #000000;
             border: none;
-            padding: 12px 24px;
-            font-size: 1rem;
+            padding: 14px 28px;
+            font-size: 1.1rem;
             font-weight: bold;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            margin-top: 15px;
-            transition: 0.2s;
+            margin-top: 20px;
+            width: 100%;
+            transition: background 0.2s ease;
         }
-        button:hover { opacity: 0.9; }
-        .warning { color: var(--error); font-weight: bold; margin-top: 10px; height: 20px; }
+        button:hover { background-color: var(--accent-hover); color: white; }
+        .warning { color: var(--error-red); font-weight: bold; margin-top: 12px; min-height: 24px; font-size: 0.95rem; }
         .hidden { display: none; }
-        #db-status { font-size: 0.9rem; color: #94a3b8; margin-top: 15px; word-break: break-all; }
+        #db-status { font-size: 0.9rem; color: var(--text-muted); margin-top: 20px; word-break: break-all; }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <div class="school-header">
+        <img class="school-logo" src="https://placehold.co/100x100/ffffff/000000?text=BNHS+Logo" alt="Badas NHS Logo">
+        <div class="school-title">Badas National High School</div>
+    </div>
+
     <div id="setup-screen">
         <h1>Software Rush</h1>
-        <p>Test your knowledge of computer software! You have 5 minutes.</p>
-        <input type="text" id="username" placeholder="Enter your name" required><br>
-        <button id="start-btn">Start Game</button>
+        <p style="color: var(--text-muted); margin-bottom: 20px;">Test your computer software skills! You have 5 minutes.</p>
+        <input type="text" id="username" placeholder="Enter Learner's Name" required><br>
+        <button id="start-btn">🎯 Start Game</button>
     </div>
 
     <div id="game-screen" class="hidden">
-        <h1>Identify the Software</h1>
-        <div class="timer">Time Left: <span id="time-display">05:00</span></div>
-        <div>Score: <span id="score-display">0</span></div>
-        <div class="hint-box" id="hint-display">Loading hint...</div>
-        <input type="text" id="answer-input" placeholder="Type your answer here..." autocomplete="off">
+        <div class="stats-bar">
+            <div class="stat-item timer-highlight">⏱️ <span id="time-display">05:00</span></div>
+            <div class="stat-item score-highlight">⭐ Score: <span id="score-display">0</span></div>
+        </div>
+        <div class="hint-box" id="hint-display">Loading game challenge...</div>
+        <input type="text" id="answer-input" placeholder="Type your answer..." autocomplete="off">
         <div class="warning" id="warning-msg"></div>
-        <button id="submit-btn">Submit Answer</button>
+        <button id="submit-btn">✔️ Submit Answer</button>
     </div>
 
     <div id="end-screen" class="hidden">
         <h1>Game Over!</h1>
-        <p>Thank you for playing.</p>
-        <h2>Your Final Score: <span id="final-score">0</span></h2>
-        <p id="db-status">Saving your score to database...</p>
+        <p>Your performance record has been compiled.</p>
+        <div style="font-size: 1.5rem; margin: 20px 0;">Final Score: <span id="final-score" style="color: var(--accent-green); font-weight: bold;">0</span></div>
+        <p id="db-status">📤 Communicating with secure database server...</p>
     </div>
 </div>
 
 <script>
     // --- SUPABASE CONFIGURATION ---
-    // PUT YOUR ACTUAL KEYS IN THE STRINGS BELOW
+    // Update these strings with the values retrieved from your API keys settings view
     const SUPABASE_URL = 'https://xtcpzeihrblaueoxspum.supabase.co'; 
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0Y3B6ZWlocmJsYXVlb3hzcHVtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjI3MDgsImV4cCI6MjA5ODM5ODcwOH0.8pZU9RQWoLnXozsn-wVFeL3aZAXNt5dmj-Sjujbf8_U';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0Y3B6ZWlocmJsYXVlb3hzcHVtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjI3MDgsImV4cCI6MjA5ODM5ODcwOH0.8pZU9RQWoLnXozsn-wVFeL3aZAXNt5dmj-Sjujbf8_U'; 
     
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // --- SOUND EFFECTS (Browser Synthesized - No hosting required!) ---
+    const soundContext = new (window.AudioContext || window.webkitAudioContext)();
+    
+    function playSound(type) {
+        const osc = soundContext.createOscillator();
+        const gain = soundContext.createGain();
+        osc.connect(gain);
+        gain.connect(soundContext.destination);
+        
+        if (type === 'correct') {
+            // Reward sound: Short high chime
+            osc.frequency.setValueAtTime(587.33, soundContext.currentTime); // D5
+            osc.frequency.setValueAtTime(880, soundContext.currentTime + 0.1);  // A5
+            gain.gain.setValueAtTime(0.1, soundContext.currentTime);
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.01, soundContext.currentTime + 0.3);
+            osc.stop(soundContext.currentTime + 0.3);
+        } else if (type === 'wrong') {
+            // Failure buzzer noise
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(130, soundContext.currentTime); // Low buzz
+            gain.gain.setValueAtTime(0.1, soundContext.currentTime);
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.01, soundContext.currentTime + 0.25);
+            osc.stop(soundContext.currentTime + 0.25);
+        } else if (type === 'gameover') {
+            // Success fanfare structure
+            osc.frequency.setValueAtTime(523.25, soundContext.currentTime); // C5
+            osc.frequency.setValueAtTime(659.25, soundContext.currentTime + 0.15); // E5
+            osc.frequency.setValueAtTime(783.99, soundContext.currentTime + 0.3); // G5
+            osc.frequency.setValueAtTime(1046.50, soundContext.currentTime + 0.45); // C6
+            gain.gain.setValueAtTime(0.1, soundContext.currentTime);
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.01, soundContext.currentTime + 0.8);
+            osc.stop(soundContext.currentTime + 0.8);
+        }
+    }
 
     // --- GAME DATA ---
     const questions = [
@@ -130,11 +238,12 @@
     const finalScoreDisplay = document.getElementById('final-score');
     const dbStatus = document.getElementById('db-status');
 
-    // --- GAME LOGIC ---
+    // --- INTERACTIVE ACTIONS ---
     document.getElementById('start-btn').addEventListener('click', () => {
         username = usernameInput.value.trim();
-        if(!username) { alert("Please enter a name!"); return; }
+        if(!username) { alert("Please enter the learner's name!"); return; }
         
+        soundContext.resume(); // Unlock browser audio safety mechanism
         setupScreen.classList.add('hidden');
         gameScreen.classList.remove('hidden');
         
@@ -147,7 +256,7 @@
             endGame();
             return;
         }
-        hintDisplay.textContent = questions[currentQuestionIndex].hint;
+        hintDisplay.innerHTML = `💡 <b>Hint:</b> ${questions[currentQuestionIndex].hint}`;
         answerInput.value = "";
         warningMsg.textContent = "";
     }
@@ -157,12 +266,14 @@
         let correctAnswer = questions[currentQuestionIndex].answer.toLowerCase();
 
         if (userAnswer === correctAnswer) {
+            playSound('correct');
             score += 10;
             scoreDisplay.textContent = score;
             currentQuestionIndex++;
             loadQuestion();
         } else {
-            warningMsg.textContent = "❌ Incorrect! Check your concepts and try again.";
+            playSound('wrong');
+            warningMsg.textContent = "❌ Incorrect configuration concept. Revise answer to continue.";
         }
     }
 
@@ -177,7 +288,6 @@
             timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
             if(timeLeft <= 0) {
-                clearInterval(timerInterval);
                 endGame();
             }
         }, 1000);
@@ -185,30 +295,23 @@
 
     async function endGame() {
         clearInterval(timerInterval);
+        playSound('gameover');
         gameScreen.classList.add('hidden');
         endScreen.classList.remove('hidden');
         finalScoreDisplay.textContent = score;
 
-        dbStatus.style.color = "#94a3b8";
-        dbStatus.textContent = "Saving your score to database...";
-
-        // Push data to Supabase table: sw_rush_scores
         try {
             const { data, error } = await _supabase
                 .from('sw_rush_scores')
                 .insert([{ student_name: username, final_score: score }]);
             
-            if (error) {
-                throw error;
-            } else {
-                dbStatus.style.color = "#4ade80";
-                dbStatus.textContent = "✅ Score successfully tracked in Supabase!";
-            }
+            if (error) throw error;
+            dbStatus.style.color = "#22c55e";
+            dbStatus.textContent = "✅ Performance record successfully finalized in Supabase!";
         } catch (err) {
-            console.error("Database Save Error Details: ", err);
+            console.error(err);
             dbStatus.style.color = "#ef4444";
-            // Displays exact internal message from your database instance context
-            dbStatus.textContent = `❌ DB Error: ${err.message || JSON.stringify(err)}`;
+            dbStatus.textContent = `❌ Secure Write Failure: ${err.message || JSON.stringify(err)}`;
         }
     }
 </script>
