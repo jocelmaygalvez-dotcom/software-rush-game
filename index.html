@@ -38,25 +38,31 @@
             text-align: center;
             box-sizing: border-box;
         }
-        /* School Logo Box Section */
+        /* School Logo Box Section Styling */
         .school-header {
             margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
         .school-logo {
-            width: 90px;
-            height: 90px;
+            width: 100px; /* Slightly increased size for visibility */
+            height: 100px;
             object-fit: contain;
             border-radius: 50%;
             border: 2px solid var(--accent-green);
             background: #ffffff;
             padding: 4px;
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.1);
         }
         .school-title {
             font-size: 0.85rem;
             letter-spacing: 2px;
             color: var(--text-muted);
             text-transform: uppercase;
-            margin-top: 5px;
+            margin-top: 10px;
+            font-weight: 600;
         }
         h1 { 
             color: var(--accent-green); 
@@ -132,7 +138,7 @@
 
 <div class="container">
     <div class="school-header">
-        <img class="school-logo" src="https://placehold.co/100x100/ffffff/000000?text=BNHS+Logo" alt="Badas NHS Logo">
+        <img class="school-logo" src="badas-nhs-logo.png" alt="Badas National High School Logo">
         <div class="school-title">Badas National High School</div>
     </div>
 
@@ -164,13 +170,12 @@
 
 <script>
     // --- SUPABASE CONFIGURATION ---
-    // Update these strings with the values retrieved from your API keys settings view
     const SUPABASE_URL = 'https://xtcpzeihrblaueoxspum.supabase.co'; 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0Y3B6ZWlocmJsYXVlb3hzcHVtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MjI3MDgsImV4cCI6MjA5ODM5ODcwOH0.8pZU9RQWoLnXozsn-wVFeL3aZAXNt5dmj-Sjujbf8_U'; 
     
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // --- SOUND EFFECTS (Browser Synthesized - No hosting required!) ---
+    // --- SOUND EFFECTS ---
     const soundContext = new (window.AudioContext || window.webkitAudioContext)();
     
     function playSound(type) {
@@ -180,27 +185,24 @@
         gain.connect(soundContext.destination);
         
         if (type === 'correct') {
-            // Reward sound: Short high chime
-            osc.frequency.setValueAtTime(587.33, soundContext.currentTime); // D5
-            osc.frequency.setValueAtTime(880, soundContext.currentTime + 0.1);  // A5
+            osc.frequency.setValueAtTime(587.33, soundContext.currentTime); 
+            osc.frequency.setValueAtTime(880, soundContext.currentTime + 0.1);  
             gain.gain.setValueAtTime(0.1, soundContext.currentTime);
             osc.start();
             gain.gain.exponentialRampToValueAtTime(0.01, soundContext.currentTime + 0.3);
             osc.stop(soundContext.currentTime + 0.3);
         } else if (type === 'wrong') {
-            // Failure buzzer noise
             osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(130, soundContext.currentTime); // Low buzz
+            osc.frequency.setValueAtTime(130, soundContext.currentTime); 
             gain.gain.setValueAtTime(0.1, soundContext.currentTime);
             osc.start();
             gain.gain.exponentialRampToValueAtTime(0.01, soundContext.currentTime + 0.25);
             osc.stop(soundContext.currentTime + 0.25);
         } else if (type === 'gameover') {
-            // Success fanfare structure
-            osc.frequency.setValueAtTime(523.25, soundContext.currentTime); // C5
-            osc.frequency.setValueAtTime(659.25, soundContext.currentTime + 0.15); // E5
-            osc.frequency.setValueAtTime(783.99, soundContext.currentTime + 0.3); // G5
-            osc.frequency.setValueAtTime(1046.50, soundContext.currentTime + 0.45); // C6
+            osc.frequency.setValueAtTime(523.25, soundContext.currentTime); 
+            osc.frequency.setValueAtTime(659.25, soundContext.currentTime + 0.15); 
+            osc.frequency.setValueAtTime(783.99, soundContext.currentTime + 0.3); 
+            osc.frequency.setValueAtTime(1046.50, soundContext.currentTime + 0.45); 
             gain.gain.setValueAtTime(0.1, soundContext.currentTime);
             osc.start();
             gain.gain.exponentialRampToValueAtTime(0.01, soundContext.currentTime + 0.8);
@@ -221,7 +223,7 @@
     // --- STATE VARIABLES ---
     let currentQuestionIndex = 0;
     let score = 0;
-    let timeLeft = 300; // 5 minutes
+    let timeLeft = 300; 
     let timerInterval;
     let username = "";
 
@@ -243,7 +245,7 @@
         username = usernameInput.value.trim();
         if(!username) { alert("Please enter the learner's name!"); return; }
         
-        soundContext.resume(); // Unlock browser audio safety mechanism
+        soundContext.resume(); 
         setupScreen.classList.add('hidden');
         gameScreen.classList.remove('hidden');
         
