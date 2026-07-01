@@ -37,6 +37,7 @@
             max-width: 480px;
             text-align: center;
             box-sizing: border-box;
+            transition: all 0.3s ease-in-out;
         }
         /* School Logo Box Section Styling */
         .school-header {
@@ -47,7 +48,7 @@
             justify-content: center;
         }
         .school-logo {
-            width: 100px; /* Slightly increased size for visibility */
+            width: 100px; 
             height: 100px;
             object-fit: contain;
             border-radius: 50%;
@@ -97,6 +98,7 @@
             border-left: 4px solid var(--accent-green);
             text-align: left;
             line-height: 1.5;
+            min-height: 70px;
         }
         input[type="text"] {
             width: 100%;
@@ -114,6 +116,12 @@
             outline: none; 
             border-color: var(--accent-green); 
             box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+        }
+        .progress-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 10px;
+            text-align: right;
         }
         button {
             background-color: var(--accent-green);
@@ -144,7 +152,7 @@
 
     <div id="setup-screen">
         <h1>Software Rush</h1>
-        <p style="color: var(--text-muted); margin-bottom: 20px;">Test your computer software skills! You have 5 minutes.</p>
+        <p style="color: var(--text-muted); margin-bottom: 20px;">Test your computer software skills! Complete all 10 terms within 5 minutes.</p>
         <input type="text" id="username" placeholder="Enter Learner's Name" required><br>
         <button id="start-btn">🎯 Start Game</button>
     </div>
@@ -154,6 +162,7 @@
             <div class="stat-item timer-highlight">⏱️ <span id="time-display">05:00</span></div>
             <div class="stat-item score-highlight">⭐ Score: <span id="score-display">0</span></div>
         </div>
+        <div class="progress-text">Vocabulary: <span id="progress-display">1</span>/10</div>
         <div class="hint-box" id="hint-display">Loading game challenge...</div>
         <input type="text" id="answer-input" placeholder="Type your answer..." autocomplete="off">
         <div class="warning" id="warning-msg"></div>
@@ -210,14 +219,19 @@
         }
     }
 
-    // --- GAME DATA ---
+    // --- 10 VOCABULARY GAME DATA ---
     const questions = [
         { hint: "An open-source operating system symbolized by a penguin.", answer: "linux" },
         { hint: "A software application used to locate, retrieve, and display content on the World Wide Web (e.g., Chrome, Firefox).", answer: "browser" },
         { hint: "The system software that manages computer hardware, software resources, and provides common services for computer programs.", answer: "operating system" },
         { hint: "A type of malicious software designed to block access to a computer system until a sum of money is paid.", answer: "ransomware" },
         { hint: "A translator program that converts high-level source code into machine code all at once before execution.", answer: "compiler" },
-        { hint: "Database management system software that uses tables, rows, and columns to link data points.", answer: "relational database" }
+        { hint: "Database management system software that uses tables, rows, and columns to link data points.", answer: "relational database" },
+        // --- NEW EXTENDED VOCABULARY TERMS ---
+        { hint: "A persistent storage system or security feature that automatically saves data safely to an offsite location to prevent permanent data loss.", answer: "backup" },
+        { hint: "A programming element used to store data values that can dynamically change during program execution.", answer: "variable" },
+        { hint: "The structural layout or blueprint design that determines how data items are organized, accessed, and managed in memory.", answer: "data structure" },
+        { hint: "A logical step-by-step set of instructions or computational rules followed to solve a specific problem or complete a task.", answer: "algorithm" }
     ];
 
     // --- STATE VARIABLES ---
@@ -234,6 +248,7 @@
     const usernameInput = document.getElementById('username');
     const answerInput = document.getElementById('answer-input');
     const hintDisplay = document.getElementById('hint-display');
+    const progressDisplay = document.getElementById('progress-display');
     const warningMsg = document.getElementById('warning-msg');
     const scoreDisplay = document.getElementById('score-display');
     const timeDisplay = document.getElementById('time-display');
@@ -259,6 +274,7 @@
             return;
         }
         hintDisplay.innerHTML = `💡 <b>Hint:</b> ${questions[currentQuestionIndex].hint}`;
+        progressDisplay.textContent = currentQuestionIndex + 1;
         answerInput.value = "";
         warningMsg.textContent = "";
     }
@@ -278,6 +294,17 @@
             warningMsg.textContent = "❌ Incorrect configuration concept. Revise answer to continue.";
         }
     }
+
+    // Refinement: Instant checking while typing so they don't always have to press Enter/Submit
+    answerInput.addEventListener('input', () => {
+        let userAnswer = answerInput.value.trim().toLowerCase();
+        let correctAnswer = questions[currentQuestionIndex].answer.toLowerCase();
+        
+        // If it matches exactly as they type, trigger success immediately
+        if (userAnswer === correctAnswer) {
+            checkAnswer();
+        }
+    });
 
     document.getElementById('submit-btn').addEventListener('click', checkAnswer);
     answerInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') checkAnswer(); });
